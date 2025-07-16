@@ -2,7 +2,7 @@ package com.example.likelion13th_spring.domain;
 
 import com.example.likelion13th_spring.domain.Mapping.ProductOrders;
 import jakarta.persistence.*;
-        import lombok.AllArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
