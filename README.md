@@ -1,1 +1,1 @@
-# [WEEK15] SpringBoot 시작하기
+# [WEEK16] JPA
