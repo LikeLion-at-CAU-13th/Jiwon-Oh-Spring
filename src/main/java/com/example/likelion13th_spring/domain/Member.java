@@ -38,5 +38,20 @@ public class Member {
     public void useDeposit(int money) {
         this.deposit -= money;
     }
+
+    // 더미 데이터 생성!
+    @Builder
+    public Member(String name, String address, String email, String phoneNumber,
+                  Role role, Boolean isAdmin, Integer deposit) {
+        this.name = name;
+        this.address = address;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+        this.isAdmin = isAdmin;
+        this.deposit = deposit;
+    }
 }
+
+
 
