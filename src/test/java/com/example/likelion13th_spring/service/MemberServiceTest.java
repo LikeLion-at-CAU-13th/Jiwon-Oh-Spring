@@ -70,5 +70,4 @@ public class MemberServiceTest {
         assertThat(result.get(2).getName()).startsWith("user11");
     }
 
-
 }
