@@ -21,6 +21,7 @@ public class Member {
     private String address;
     private String email;
     private String phoneNumber;
+    private int age;
 
     @Enumerated(EnumType.STRING)
     private Role role; // 판매자면 SELLER, 구매자면 BUYER
@@ -41,15 +42,17 @@ public class Member {
 
     // 더미 데이터 생성!
     @Builder
-    public Member(String name, String address, String email, String phoneNumber,
+    public Member(String name, String address, String email, String phoneNumber, int age,
                   Role role, Boolean isAdmin, Integer deposit) {
         this.name = name;
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.age = age;
         this.role = role;
         this.isAdmin = isAdmin;
         this.deposit = deposit;
+
     }
 }
 

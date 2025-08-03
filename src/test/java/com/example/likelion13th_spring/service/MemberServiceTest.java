@@ -32,6 +32,7 @@ public class MemberServiceTest {
                     .email("user" + i + "@test.com")
                     .address("서울시 테스트동 " + i + "번지")
                     .phoneNumber("010-1234-56" + String.format("%02d", i))
+                    .age(i)
                     .deposit(1000 * i)
                     .isAdmin(false)
                     .role(Role.BUYER)
@@ -50,4 +51,24 @@ public class MemberServiceTest {
         assertThat(page.getTotalPages()).isEqualTo(3); // 3 페이지
         assertThat(page.getContent().get(0).getName()).isEqualTo("user1");
     }
+
+    @Test
+    void testGetMembersSortedByName() {
+        Page<Member> page = memberService.getMembersSortedByName(0, 10);
+
+        assertThat(page.getContent()).hasSize(10);
+        assertThat(page.getTotalElements()).isEqualTo(11);
+        assertThat(page.getTotalPages()).isEqualTo(2);
+        assertThat(page.getContent().get(0).getName()).isEqualTo("user20");
+    }
+
+    @Test
+    void testGetMembersByNamePrefix() {
+        var result = memberService.getMembersByNamePrefix("user1");
+
+        assertThat(result.size()).isEqualTo(11);
+        assertThat(result.get(2).getName()).startsWith("user11");
+    }
+
+
 }

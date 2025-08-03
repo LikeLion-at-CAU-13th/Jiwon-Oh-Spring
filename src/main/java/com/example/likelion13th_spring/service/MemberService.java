@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 //import lombok.RequiredArgsConstructor;
 //import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 //import org.springframework.data.domain.Sort;
 //import org.springframework.stereotype.Service;
 
+// 페이지네이션
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -28,6 +31,14 @@ public class MemberService {
         return memberRepository.findAll(pageable);
     }
 
+    public Page<Member> getMembersSortedByName(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+        return memberRepository.findByAgeGreaterThanEqual(20, pageable);
+    }
+
+    public List<Member> getMembersByNamePrefix(String prefix) {
+        return memberRepository.findByNameStartingWith(prefix);
+    }
 }
 
 
