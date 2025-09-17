@@ -9,6 +9,8 @@ import com.example.likelion13th_spring.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.example.likelion13th_spring.dto.request.ProductUpdateRequestDto; // 추가
+
 
 import java.util.List;
 
@@ -45,6 +47,27 @@ public class ProductService {
     public ProductResponseDto getProductById(Long id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        return ProductResponseDto.fromEntity(product);
+    }
+
+    @Transactional
+    public ProductResponseDto updateProduct(Long productId, ProductUpdateRequestDto dto) {
+        // 판매자 조회
+        Member member = memberRepository.findById(dto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 판매자가 존재하지 않습니다."));
+
+        // 상품 조회
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+
+        // 판매자 권한 확인
+        if (!product.getSeller().getId().equals(member.getId())) {
+            throw new IllegalArgumentException("본인의 상품만 수정할 수 있습니다.");
+        }
+
+        // 상품 수정
+        product.update(dto.getName(), dto.getPrice(), dto.getStock(), dto.getDescription());
+
         return ProductResponseDto.fromEntity(product);
     }
 

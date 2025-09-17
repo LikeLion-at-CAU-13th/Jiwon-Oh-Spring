@@ -7,6 +7,7 @@ import com.example.likelion13th_spring.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.likelion13th_spring.dto.request.ProductUpdateRequestDto; // 추가
 
 import java.util.List;
 
@@ -30,6 +31,12 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id,
+                                                            @RequestBody ProductUpdateRequestDto dto) {
+        return ResponseEntity.ok(productService.updateProduct(id, dto));
     }
 
 }
