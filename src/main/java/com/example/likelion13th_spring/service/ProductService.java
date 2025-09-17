@@ -10,13 +10,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
     private final MemberRepository memberRepository;
 
-    @Transactional
+    @Transactional //이건 언제쓰는거지 공부해보자~~
     public ProductResponseDto createProduct(ProductRequestDto dto) {
 
         Member member = memberRepository.findById(dto.getMemberId())
@@ -31,4 +33,19 @@ public class ProductService {
         Product saved = productRepository.save(product); // 변환된 엔티티를 데이터베이스에 저장
         return new ProductResponseDto(saved.getId(), saved.getName(), saved.getPrice(), saved.getStock(), saved.getDescription()); // 응답
     }
+
+    // 모든 상품 가져오기
+    public List<ProductResponseDto> getAllProducts() {
+        return productRepository.findAll().stream()
+                .map(ProductResponseDto::fromEntity)
+                .toList();
+    }
+
+    // 특정 상품 가져오기
+    public ProductResponseDto getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 존재하지 않습니다."));
+        return ProductResponseDto.fromEntity(product);
+    }
+
 }
