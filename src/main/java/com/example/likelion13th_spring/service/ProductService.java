@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.likelion13th_spring.dto.request.ProductUpdateRequestDto; // 추가
+import com.example.likelion13th_spring.dto.request.ProductDeleteRequestDto; // 추가
 
 
 import java.util.List;
@@ -69,6 +70,23 @@ public class ProductService {
         product.update(dto.getName(), dto.getPrice(), dto.getStock(), dto.getDescription());
 
         return ProductResponseDto.fromEntity(product);
+    }    @Transactional
+    public void deleteProduct(Long productId, ProductDeleteRequestDto dto) {
+        // 판매자 조회
+        Member seller = memberRepository.findById(dto.getMemberId())
+                .orElseThrow(() -> new IllegalArgumentException("판매자를 찾을 수 없습니다."));
+
+        // 상품 조회
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        // 권한 확인
+        if (!product.getSeller().getId().equals(seller.getId())) {
+            throw new IllegalArgumentException("본인의 상품만 삭제할 수 있습니다.");
+        }
+
+        // 삭제
+        productRepository.delete(product);
     }
 
 }

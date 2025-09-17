@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.likelion13th_spring.dto.request.ProductUpdateRequestDto; // 추가
+import com.example.likelion13th_spring.dto.request.ProductDeleteRequestDto; // 추가
 
 import java.util.List;
 
@@ -37,6 +38,12 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id,
                                                             @RequestBody ProductUpdateRequestDto dto) {
         return ResponseEntity.ok(productService.updateProduct(id, dto));
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable Long id,
+                                                @RequestBody ProductDeleteRequestDto dto) {
+        productService.deleteProduct(id, dto);
+        return ResponseEntity.ok("상품이 성공적으로 삭제되었습니다.");
     }
 
 }
