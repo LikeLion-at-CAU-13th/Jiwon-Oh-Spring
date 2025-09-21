@@ -7,6 +7,8 @@ import com.example.likelion13th_spring.domain.Orders;
 import com.example.likelion13th_spring.domain.Product;
 import com.example.likelion13th_spring.dto.request.OrdersRequestDto;
 import com.example.likelion13th_spring.dto.request.ProductOrderRequestDto;
+import com.example.likelion13th_spring.dto.response.OrdersResponseDto;
+import com.example.likelion13th_spring.dto.response.ProductOrderResponseDto;
 import com.example.likelion13th_spring.enums.DeliverStatus;
 import com.example.likelion13th_spring.repository.MemberRepository;
 import com.example.likelion13th_spring.repository.OrdersRepository;
@@ -28,7 +30,6 @@ public class OrdersService {
 
     @Transactional
     public Orders createOrder(OrdersRequestDto requestDto) {
-        // 1. 구매자 정보 조회
         Member buyer = memberRepository.findById(requestDto.getBuyerId())
                 .orElseThrow(() -> new IllegalArgumentException("구매자를 찾을 수 없습니다."));
 
@@ -39,14 +40,12 @@ public class OrdersService {
         shippingAddress.setDetailAddress(requestDto.getShippingAddress().getDetailAddress());
         shippingAddress.setPostalCode(requestDto.getShippingAddress().getPostalCode());
 
-        // 2. 주문 엔티티 생성 및 배송 정보 설정
         Orders orders = Orders.builder()
                 .buyer(buyer)
                 .deliverStatus(DeliverStatus.PREPARATION) // 주문 생성 시 초기 상태
                 .shippingAddress(shippingAddress)
                 .build();
 
-        // 3. 상품 목록 처리
         List<ProductOrders> productOrdersList = requestDto.getProductOrders().stream()
                 .map(productOrderDto -> {
                     Product product = productRepository.findById(productOrderDto.getProductId())
@@ -62,7 +61,34 @@ public class OrdersService {
 
         orders.setProductOrders(productOrdersList);
 
-        // 4. 주문 엔티티 저장
         return ordersRepository.save(orders);
+    }
+    @Transactional
+    public List<OrdersResponseDto> getAllOrders() {
+        // 모든 Orders 엔티티 조회
+        List<Orders> ordersList = ordersRepository.findAll();
+
+        // Orders 엔티티 리스트를 OrdersResponseDto 리스트로 변환
+        return ordersList.stream()
+                .map(this::mapToOrdersResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    private OrdersResponseDto mapToOrdersResponseDto(Orders orders) {
+        List<ProductOrderResponseDto> productOrdersDtoList = orders.getProductOrders().stream()
+                .map(productOrders -> ProductOrderResponseDto.builder()
+                        .productId(productOrders.getProduct().getId())
+                        .productName(productOrders.getProduct().getName())
+                        .price(productOrders.getProduct().getPrice())
+                        .quantity(productOrders.getQuantity())
+                        .build())
+                .collect(Collectors.toList());
+
+        return OrdersResponseDto.builder()
+                .orderId(orders.getId())
+                .deliverStatus(orders.getDeliverStatus())
+                .shippingAddress(orders.getShippingAddress())
+                .productOrders(productOrdersDtoList)
+                .build();
     }
 }

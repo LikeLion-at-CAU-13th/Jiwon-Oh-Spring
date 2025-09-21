@@ -22,18 +22,20 @@ public class OrdersController {
     @PostMapping
     public ResponseEntity<OrdersResponseDto> createOrder(@RequestBody OrdersRequestDto requestDto) {
 
-        // 1. 서비스 계층을 호출하여 주문을 생성하고, Orders 엔티티를 반환받습니다.
         Orders createdOrder = ordersService.createOrder(requestDto);
 
-        // 2. Orders 엔티티를 OrdersResponseDto로 변환합니다.
         OrdersResponseDto responseDto = OrdersResponseDto.builder()
                 .orderId(createdOrder.getId())
                 .message("주문이 성공적으로 생성되었습니다.")
                 .deliverStatus(createdOrder.getDeliverStatus())
                 .build();
 
-        // 3. HttpStatus.CREATED(201)와 함께 응답 DTO를 반환합니다.
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+    @GetMapping
+    public ResponseEntity<List<OrdersResponseDto>> getAllOrders() {
+        List<OrdersResponseDto> orders = ordersService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 
 
