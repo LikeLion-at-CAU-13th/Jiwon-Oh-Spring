@@ -63,12 +63,30 @@ public class OrdersService {
 
         return ordersRepository.save(orders);
     }
+
+    // 주문 전체 조회
     @Transactional
     public List<OrdersResponseDto> getAllOrders() {
-        // 모든 Orders 엔티티 조회
         List<Orders> ordersList = ordersRepository.findAll();
 
-        // Orders 엔티티 리스트를 OrdersResponseDto 리스트로 변환
+        return ordersList.stream()
+                .map(this::mapToOrdersResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    // 상품별 주문
+    @Transactional
+    public OrdersResponseDto getOrderById(Long orderId) {
+        Orders orders = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문 ID를 찾을 수 없습니다: " + orderId));
+        return mapToOrdersResponseDto(orders);
+    }
+
+    @Transactional
+    public List<OrdersResponseDto> getOrdersByBuyerId(Long buyerId) {
+        Member buyer = memberRepository.findById(buyerId)
+                .orElseThrow(() -> new IllegalArgumentException("구매자를 찾을 수 없습니다: " + buyerId));
+        List<Orders> ordersList = ordersRepository.findByBuyer(buyer);
         return ordersList.stream()
                 .map(this::mapToOrdersResponseDto)
                 .collect(Collectors.toList());

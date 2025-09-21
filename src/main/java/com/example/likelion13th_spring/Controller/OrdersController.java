@@ -32,11 +32,21 @@ public class OrdersController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
-    @GetMapping
+    @GetMapping// 전체 주문 조회
     public ResponseEntity<List<OrdersResponseDto>> getAllOrders() {
         List<OrdersResponseDto> orders = ordersService.getAllOrders();
         return ResponseEntity.ok(orders);
     }
+    @GetMapping("/{orderId}") // 상품별 주문 조회
+    public ResponseEntity<OrdersResponseDto> getOrderById(@PathVariable Long orderId) {
+        OrdersResponseDto orders = ordersService.getOrderById(orderId);
+        return ResponseEntity.ok(orders);
+    }
 
+    @GetMapping("/buyers/{buyerId}") // 구매자별 주문 조회
+    public ResponseEntity<List<OrdersResponseDto>> getOrdersByBuyerId(@PathVariable Long buyerId) {
+        List<OrdersResponseDto> orders = ordersService.getOrdersByBuyerId(buyerId);
+        return ResponseEntity.ok(orders);
+    }
 
 }
