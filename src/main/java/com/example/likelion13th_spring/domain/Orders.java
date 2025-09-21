@@ -35,4 +35,11 @@ public class Orders extends BaseTimeEntity {
 
     @Embedded
     private ShippingAddress shippingAddress;
+
+    // soft 삭제를 위한 필드 - isDeleted
+    private boolean isDeleted;
+
+    public void softDelete(){
+        this.isDeleted = true;
+    }
 }

@@ -5,7 +5,9 @@ import com.example.likelion13th_spring.domain.Mapping.ProductOrders;
 import com.example.likelion13th_spring.domain.Member;
 import com.example.likelion13th_spring.domain.Orders;
 import com.example.likelion13th_spring.domain.Product;
+import com.example.likelion13th_spring.dto.request.OrdersDeleteRequestDto;
 import com.example.likelion13th_spring.dto.request.OrdersRequestDto;
+import com.example.likelion13th_spring.dto.request.OrdersUpdateRequestDto;
 import com.example.likelion13th_spring.dto.request.ProductOrderRequestDto;
 import com.example.likelion13th_spring.dto.response.OrdersResponseDto;
 import com.example.likelion13th_spring.dto.response.ProductOrderResponseDto;
@@ -82,11 +84,12 @@ public class OrdersService {
         return mapToOrdersResponseDto(orders);
     }
 
+    // 구매자별 주문
     @Transactional
     public List<OrdersResponseDto> getOrdersByBuyerId(Long buyerId) {
         Member buyer = memberRepository.findById(buyerId)
                 .orElseThrow(() -> new IllegalArgumentException("구매자를 찾을 수 없습니다: " + buyerId));
-        List<Orders> ordersList = ordersRepository.findByBuyer(buyer);
+        List<Orders> ordersList = ordersRepository.findByBuyerAndIsDeletedFalse(buyer);
         return ordersList.stream()
                 .map(this::mapToOrdersResponseDto)
                 .collect(Collectors.toList());
@@ -108,5 +111,26 @@ public class OrdersService {
                 .shippingAddress(orders.getShippingAddress())
                 .productOrders(productOrdersDtoList)
                 .build();
+    }
+
+    @Transactional
+    public Orders updateOrder(Long orderId, OrdersUpdateRequestDto requestDto) {
+        Orders orders = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다. 주문번호: " + orderId));
+        if (orders.getDeliverStatus() != DeliverStatus.PREPARATION) {
+            throw new IllegalStateException("배송 준비 중인 주문만 수정 가능합니다.");
+        }
+        orders.setShippingAddress(requestDto.getShippingAddress()); // orders 엔티티의 setter를 이용해 배송정보 업데이트
+        return orders;
+    }
+
+    @Transactional
+    public void deleteOrder(Long orderId) {
+        Orders orders = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다. 주문번호: " + orderId));
+        if (orders.getDeliverStatus() != DeliverStatus.COMPLETED) {
+            throw new IllegalStateException("배송 완료된 주문만 삭제 가능합니다.");
+        }
+        orders.setDeleted(true);
     }
 }

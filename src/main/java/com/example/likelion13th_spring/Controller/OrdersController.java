@@ -1,7 +1,9 @@
 package com.example.likelion13th_spring.Controller;
 
 import com.example.likelion13th_spring.domain.Orders;
+import com.example.likelion13th_spring.dto.request.OrdersDeleteRequestDto;
 import com.example.likelion13th_spring.dto.request.OrdersRequestDto;
+import com.example.likelion13th_spring.dto.request.OrdersUpdateRequestDto;
 import com.example.likelion13th_spring.dto.response.OrdersResponseDto;
 import com.example.likelion13th_spring.service.OrdersService;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +50,21 @@ public class OrdersController {
         List<OrdersResponseDto> orders = ordersService.getOrdersByBuyerId(buyerId);
         return ResponseEntity.ok(orders);
     }
-
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<OrdersResponseDto> updateOrder(@PathVariable Long orderId, @RequestBody OrdersUpdateRequestDto requestDto) {
+        Orders updatedOrder = ordersService.updateOrder(orderId, requestDto);
+        // 갱신
+        OrdersResponseDto responseDto = OrdersResponseDto.builder()
+                .orderId(updatedOrder.getId())
+                .deliverStatus(updatedOrder.getDeliverStatus())
+                .shippingAddress(updatedOrder.getShippingAddress())
+                .productOrders(null)
+                .build();
+        return ResponseEntity.ok(responseDto);
+    }
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<OrdersResponseDto> deleteOrder(@PathVariable Long orderId) {
+        ordersService.deleteOrder(orderId);
+        return ResponseEntity.noContent().build();
+    }
 }
