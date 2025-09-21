@@ -69,7 +69,7 @@ public class OrdersService {
     // 주문 전체 조회
     @Transactional
     public List<OrdersResponseDto> getAllOrders() {
-        List<Orders> ordersList = ordersRepository.findAll();
+        List<Orders> ordersList = ordersRepository.findByIsDeletedFalse(); // findAll -> findByIsDeletedFalse
 
         return ordersList.stream()
                 .map(this::mapToOrdersResponseDto)
@@ -79,7 +79,7 @@ public class OrdersService {
     // 상품별 주문
     @Transactional
     public OrdersResponseDto getOrderById(Long orderId) {
-        Orders orders = ordersRepository.findById(orderId)
+        Orders orders = ordersRepository.findByIdAndIsDeletedFalse(orderId) //findBy -> findByIdAndIsDeletedFalse
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문 ID를 찾을 수 없습니다: " + orderId));
         return mapToOrdersResponseDto(orders);
     }
