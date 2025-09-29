@@ -2,6 +2,7 @@ package com.example.likelion13th_spring.service;
 
 import com.example.likelion13th_spring.domain.Member;
 import com.example.likelion13th_spring.dto.request.JoinRequestDto;
+import com.example.likelion13th_spring.exception.NameAlreadyExistsException;
 import com.example.likelion13th_spring.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -46,7 +47,7 @@ public class MemberService {
 
     public void join(JoinRequestDto joinRequestDto) {
         if (memberRepository.existsByName(joinRequestDto.getName())) {
-            return;
+            throw new NameAlreadyExistsException(joinRequestDto.getName());
         }
 
         Member member = joinRequestDto.toEntity(bCryptPasswordEncoder); // 유저 객체 생성
