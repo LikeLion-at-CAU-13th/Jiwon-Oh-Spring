@@ -17,7 +17,7 @@ public class ShippingAddress {
 
     private String streetAddress; // 도로명주소
 
-    private String detailAddress; // 상세주소
+    private String detailAddress; // 상세주소w
 
     private String postalCode; // 우편번호
 }
