@@ -30,3 +30,10 @@ spring:
               - email
               - profile
             redirect-uri: "http://localhost:8080/login/oauth2/code/google"
+          kakao:
+            client-id: KAKAO_CLIENT_ID
+            client-secret: KAKAO_CLIENT_SECRET
+            scope:
+              - email // 카카오에는 email 이 없는데 어쩌지
+              - profile
+            redirect-uri: "http://localhost:8080/login/oauth2/code/kakao"
