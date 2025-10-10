@@ -1,6 +1,8 @@
 package com.example.likelion13th_spring.service;
 
 import com.example.likelion13th_spring.domain.Member;
+import com.example.likelion13th_spring.dto.request.JoinRequestDto;
+import com.example.likelion13th_spring.exception.NameAlreadyExistsException;
 import com.example.likelion13th_spring.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -8,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +41,17 @@ public class MemberService {
 
     public List<Member> getMembersByNamePrefix(String prefix) {
         return memberRepository.findByNameStartingWith(prefix);
+    }
+    // 비밀번호 인코더 DI (생성자 주입)
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    public void join(JoinRequestDto joinRequestDto) {
+        if (memberRepository.existsByName(joinRequestDto.getName())) {
+            throw new NameAlreadyExistsException(joinRequestDto.getName());
+        }
+
+        Member member = joinRequestDto.toEntity(bCryptPasswordEncoder); // 유저 객체 생성
+        memberRepository.save(member); // 유저 정보 저장
     }
 }
 

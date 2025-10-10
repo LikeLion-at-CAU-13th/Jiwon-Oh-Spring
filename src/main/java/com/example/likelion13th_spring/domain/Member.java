@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import java.util.*;
 
 @Entity
@@ -18,6 +17,7 @@ public class Member {
     private Long id;
 
     private String name;
+    private String password;
     private String address;
     private String email;
     private String phoneNumber;
@@ -43,9 +43,10 @@ public class Member {
 
     // 더미 데이터 생성!
     @Builder
-    public Member(String name, String address, String email, String phoneNumber, int age,
+    public Member(String name, String password, String address, String email, String phoneNumber, int age,
                   Role role, Boolean isAdmin, Integer deposit) {
         this.name = name;
+        this.password = password;
         this.address = address;
         this.email = email;
         this.phoneNumber = phoneNumber;
