@@ -35,7 +35,7 @@ dependencies {
 
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.0' // jpa 쿼리파라미터 확인
 	implementation 'org.springframework.boot:spring-boot-starter-security' //spring security
-
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' //oauth
 }
 
 tasks.named('test') {
