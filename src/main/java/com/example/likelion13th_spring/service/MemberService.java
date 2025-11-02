@@ -15,14 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.data.domain.Sort;
-//import org.springframework.stereotype.Service;
-
 // 페이지네이션
 @Service
 @RequiredArgsConstructor
@@ -52,6 +44,15 @@ public class MemberService {
 
         Member member = joinRequestDto.toEntity(bCryptPasswordEncoder); // 유저 객체 생성
         memberRepository.save(member); // 유저 정보 저장
+    }
+
+    public Member login(JoinRequestDto joinRequestDto) {
+        Member member = memberRepository.findByName(joinRequestDto.getName())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        if (!bCryptPasswordEncoder.matches(joinRequestDto.getPassword(), member.getPassword())) {
+            return null;
+        }
+        return member;
     }
 }
 
