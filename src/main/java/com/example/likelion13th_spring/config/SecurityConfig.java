@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable) // http basic auth 기반 로그인 인증창 뜨지 않게
                 .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 페이지 없애기
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/join", "/login").permitAll()
+                       .requestMatchers("/join", "/login").permitAll()
                        .requestMatchers("/**").authenticated()) // 인증된 사용자만 허용
 //                .oauth2Login(oauth -> oauth
 //                        .userInfoEndpoint(userInfo -> userInfo
