@@ -1,33 +1,32 @@
 package com.example.likelion13th_spring.service;
 
 import com.example.likelion13th_spring.domain.Member;
+import com.example.likelion13th_spring.domain.Product;
 import com.example.likelion13th_spring.dto.request.JoinRequestDto;
+import com.example.likelion13th_spring.dto.response.ProductResponseDto;
 import com.example.likelion13th_spring.exception.NameAlreadyExistsException;
 import com.example.likelion13th_spring.repository.MemberRepository;
+import com.example.likelion13th_spring.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
-
-//import lombok.RequiredArgsConstructor;
-//import org.springframework.data.domain.Page;
-//import org.springframework.data.domain.PageRequest;
-//import org.springframework.data.domain.Pageable;
-//import org.springframework.data.domain.Sort;
-//import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 // 페이지네이션
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final ProductRepository productRepository;
 
     public Page<Member> getMembersByPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
@@ -52,6 +51,25 @@ public class MemberService {
 
         Member member = joinRequestDto.toEntity(bCryptPasswordEncoder); // 유저 객체 생성
         memberRepository.save(member); // 유저 정보 저장
+    }
+
+    public Member login(JoinRequestDto joinRequestDto) {
+        Member member = memberRepository.findByName(joinRequestDto.getName())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+        if (!bCryptPasswordEncoder.matches(joinRequestDto.getPassword(), member.getPassword())) {
+            return null;
+        }
+        return member;
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponseDto> getMyProducts(String sellerName) {
+        Member seller = memberRepository.findByName(sellerName)
+                .orElseThrow(() -> new UsernameNotFoundException("판매자 정보를 찾을 수 없습니다."));
+        List<Product> products = productRepository.findBySeller(seller);
+        return products.stream()
+                .map(ProductResponseDto::fromEntity)
+                .collect(Collectors.toList());
     }
 }
 
